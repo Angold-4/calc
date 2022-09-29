@@ -4,7 +4,13 @@ namespace calc {
 
 Node* Parser::Parse(Token* tok) {
   token = tok;
-  return equation(&tok, tok);
+  Node* ret = equation(&tok, tok);
+
+  if (tok->kind != TK_EOF) {
+    error_at(token->loc, tok->loc, "Extra token");
+  }
+
+  return ret;
 };
 
 Node* Parser::equation(Token **rest, Token* tok) {
@@ -51,7 +57,7 @@ Node* Parser::unary(Token **rest, Token *tok) {
     return unary(rest, tok->nxt);
   }
   if (equal(tok, _minus)) {
-    return new_unary(ND_NEG, unary(&tok, tok->nxt));
+    return new_unary(ND_NEG, unary(rest, tok->nxt));
   }
 
   return primary(rest, tok);
@@ -60,7 +66,7 @@ Node* Parser::unary(Token **rest, Token *tok) {
 Node *Parser::primary(Token **rest, Token *tok) {
   char _b[] = "("; char _d[] = ")";
   if (equal(tok, _b)) {
-    Node* node = add(&tok, tok);
+    Node* node = add(&tok, tok->nxt);
     *rest = skip(tok, _d);
     return node;
   }

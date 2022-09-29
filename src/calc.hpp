@@ -2,12 +2,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
+#include <assert.h>
 #include <string.h>
 #include <iostream>
 
-#define ul unsigned long
-
-// Reports an error location and exit
 static void verror_at(char *start, char *loc, const char *fmt, va_list ap) {
   // only one line
   int pos = loc - start;
@@ -52,7 +50,7 @@ typedef enum {
 struct Token {
   TokenKind kind;
   Token* nxt;  /* A linked list */
-  ul val;      /* If kind is TK_NUM, its value */
+  int val;      /* If kind is TK_NUM, its value */
   char* loc;
   int len;     /* Length of this token */
 };
@@ -91,10 +89,6 @@ typedef enum {
   ND_MUL, // *
   ND_DIV, // /
   ND_NEG, // unary -
-  ND_EQ,  // ==
-  ND_NE,  // !=
-  ND_LT,  // <
-  ND_LE,  // <=
   ND_NUM, // integer
   ND_ERR,
 } NodeKind;
@@ -114,11 +108,9 @@ public:
     start = new_empty_node();
   }
 
-  /*
   ~Parser() {
     dealloc(start);
   }
-  */
 
   Node* Parse(Token* tok);
 
@@ -159,6 +151,30 @@ protected:
 
   bool equal(Token *tok, char *op);
   Token* skip(Token *tok, char *s);
+};
+
+
+/* Code Generator */
+
+class Generator {
+public:
+  Generator() {
+    depth = 0;
+  }
+
+  void GenCode(Node *node);
+
+  void GenASM(Node* node);
+
+protected:
+  Node *start;
+  int depth;
+
+  void push();
+  void pop(const char* reg);
+
+  void prologue_mac();
+  void prologue_linux();
 };
 
 } // namespace calc
