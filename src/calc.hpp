@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <string.h>
 #include <iostream>
+#include <cstdarg>
 
 static void verror_at(char *start, char *loc, const char *fmt, va_list ap) {
   // only one line
