@@ -1,5 +1,7 @@
 #include <cctype>
 #include <stdlib.h>
+#include <cstdint>
+#include <cstring>
 #include <stdio.h>
 #include <string>
 #include <assert.h>
